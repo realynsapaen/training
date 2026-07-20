@@ -138,6 +138,20 @@
   .ex.is-done .btn--done{background:var(--easy); color:#fff; border-color:var(--easy)}
   .btn__ic{font-size:15px}
 
+  /* video demo */
+  .demo__toggle{width:100%; padding:11px; border-radius:11px; background:#F0EEE8;
+    border:1px solid var(--line-2); color:var(--ink); font-weight:800; font-size:13.5px;
+    letter-spacing:.02em; display:flex; align-items:center; justify-content:center; gap:8px; transition:transform .06s}
+  .demo__toggle:active{transform:scale(.99)}
+  .demo__toggle .chev{transition:transform .18s; font-size:11px; opacity:.6}
+  .demo__toggle[aria-expanded="true"] .chev{transform:rotate(180deg)}
+  .demo{margin-top:10px; display:none}
+  .demo.is-open{display:block}
+  .demo__frame{position:relative; width:100%; padding-bottom:56.25%; border-radius:12px; overflow:hidden; background:#000}
+  .demo__frame iframe{position:absolute; inset:0; width:100%; height:100%; border:0}
+  .demo__yt{display:inline-block; margin-top:9px; font-size:12.5px; font-weight:800; letter-spacing:.02em;
+    color:var(--hot-ink); text-decoration:none}
+
   /* run big card */
   .runcard{background:var(--ink); color:var(--paper); border-radius:18px; padding:20px 18px; margin-bottom:12px; text-align:center; box-shadow:var(--shadow)}
   .runcard__k{font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:#B7B2AA; font-weight:800}
@@ -172,6 +186,12 @@
   .help__body code{font-family:var(--mono); font-size:12px; background:#EFEDE7; padding:1px 5px; border-radius:5px; color:var(--ink)}
 
   .empty{text-align:center; color:var(--ink-2); padding:40px 20px; font-size:14px}
+
+  .guidelink{display:flex; align-items:center; justify-content:space-between; gap:8px;
+    background:var(--surface); border:1px solid var(--line); border-radius:12px; box-shadow:var(--shadow);
+    padding:12px 14px; margin-bottom:12px; text-decoration:none; color:var(--ink); font-weight:700; font-size:13.5px; transition:transform .06s}
+  .guidelink span:last-child{color:var(--ink-2); font-size:15px}
+  .guidelink:active{transform:scale(.99)}
 
   /* ---------- Bottom nav ---------- */
   .botnav{position:fixed; left:0; right:0; bottom:0; z-index:20; display:flex;
@@ -288,13 +308,13 @@ const WEEKS = [
       warmup:{ pre:"3–5 min cardio of choice, then 3 rounds:",
                items:["5 / leg Single-Leg Deadlift","5 / leg Curtsy Lunge","3 / side Bird Dog"] },
       blocks:[
-        { id:"A", name:"Goblet Squat", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
+        { id:"A", name:"Goblet Squat", video:"MeIiIdhvXT4", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
           log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
-        { id:"B", name:"Dumbbell Romanian Deadlift", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
+        { id:"B", name:"Dumbbell Romanian Deadlift", video:"aa57T45iFSE", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
           log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
-        { id:"C", name:"Dumbbell Bench Press", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
+        { id:"C", name:"Dumbbell Bench Press", video:"epUEDuFBmvk", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
           log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
-        { id:"D", name:"Lat Pull Down", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
+        { id:"D", name:"Lat Pull Down", video:"CAwf7n6Luuc", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
           log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
         { id:"E", name:"Interval LIC", rx:"Assault Bike / Rower / Ski Erg\n30 sec high effort · 90 sec rest × 4 (8 min)",
           effort:{heart:"🧡", label:"High sustained effort"}, exercise:true,
@@ -324,14 +344,14 @@ const WEEKS = [
       warmup:{ pre:"3–5 min cardio of choice, then 3 rounds:",
                items:["5 / leg Single-Leg Glute Bridge","5 / leg Split Squat","6 Incline T Push-Ups"] },
       blocks:[
-        { id:"A", name:"Dumbbell Walking Lunge", rx:"12 steps @ RPE 6–7\n90 sec rest × 3 sets",
+        { id:"A", name:"Dumbbell Walking Lunge", video:"I34ysEkPK7w", rx:"12 steps @ RPE 6–7\n90 sec rest × 3 sets",
           log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
-        { id:"B", name:"45° Back Extension", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
+        { id:"B", name:"45° Back Extension", video:"cFNs7A3_oeI", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
           note:"Hold a weight at your chest if you need more intensity.",
           log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
-        { id:"C", name:"Back-Supported DB Shoulder Press", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
+        { id:"C", name:"Back-Supported DB Shoulder Press", video:"fuQpuu--bMI", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
           log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
-        { id:"D", name:"Seated Cable Row", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
+        { id:"D", name:"Seated Cable Row", video:"oFtfkSElE0s", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
           log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
         { id:"E", name:"Sustain LIC", rx:"Spin Bike / Rower\n20 min steady",
           effort:{heart:"💚", label:"Sustained effort"}, exercise:true,
@@ -343,7 +363,352 @@ const WEEKS = [
       note:"Full rest — or an easy walk if you feel like moving. (Added to round out the week; adjust as you like.)" },
   ]
 },
-/* ---- Paste Week 2 here, same shape:  { week:2, meta:"…", days:[ … ] },  ---- */
+{
+  week:2, meta:"Base build",
+  days:[
+    { day:"Monday", date:"January 20", type:"run", title:"W2 · Run 1",
+      warmup:["5 min brisk walk"],
+      run:{ label:"30 sec jog · 1 min walk × 6 (9 min)",
+            timer:{type:"interval", sets:6, phases:[
+              {name:"Jog", sec:30, tone:"hot"}, {name:"Walk", sec:60, tone:"easy"}]}},
+      cooldown:["5 min brisk walk"] },
+
+    { day:"Tuesday", date:"January 21", type:"strength", title:"W2 · Strength 1",
+      warmup:{ pre:"3–5 min cardio of choice, then 3 rounds:",
+               items:["5 / leg Single-Leg Deadlift","5 / leg Curtsy Lunge","3 / side Bird Dog"] },
+      blocks:[
+        { id:"A", name:"Goblet Squat", video:"MeIiIdhvXT4", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"B", name:"Dumbbell Romanian Deadlift", video:"aa57T45iFSE", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"C", name:"Dumbbell Bench Press", video:"epUEDuFBmvk", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"D", name:"Lat Pull Down", video:"CAwf7n6Luuc", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"E", name:"Interval LIC", rx:"Assault Bike / Rower / Ski Erg\n30 sec high effort · 90 sec rest × 4 (8 min)",
+          effort:{heart:"🧡", label:"High sustained effort"},
+          log:{cols:["Dist / Cal","RPE"], rows:4}, timer:{type:"interval", sets:4, phases:[
+            {name:"Work", sec:30, tone:"hot"}, {name:"Rest", sec:90, tone:"rest"}]} },
+      ],
+      cooldown:["Foam Roll Calves 2–3 min","Thinking Pose 3 × 30 sec / side","Heel Sit 60–90 sec"] },
+
+    { day:"Wednesday", date:"January 22", type:"run", title:"W2 · Run 2",
+      warmup:["5 min brisk walk"],
+      run:{ label:"30 sec jog · 1 min walk × 8 (12 min)",
+            timer:{type:"interval", sets:8, phases:[
+              {name:"Jog", sec:30, tone:"hot"}, {name:"Walk", sec:60, tone:"easy"}]}},
+      cooldown:["5 min brisk walk"] },
+
+    { day:"Thursday", date:"January 23", type:"rest", title:"Rest Day",
+      note:"Walk 30–60 min total for the day. All in one go, or broken into shorter walks." },
+
+    { day:"Friday", date:"January 24", type:"run", title:"W2 · Run 3",
+      warmup:["5 min brisk walk"],
+      run:{ label:"30 sec jog · 1 min walk × 10 (15 min)",
+            timer:{type:"interval", sets:10, phases:[
+              {name:"Jog", sec:30, tone:"hot"}, {name:"Walk", sec:60, tone:"easy"}]}},
+      cooldown:["5 min brisk walk"] },
+
+    { day:"Saturday", date:"January 25", type:"strength", title:"W2 · Strength 2",
+      warmup:{ pre:"3–5 min cardio of choice, then 3 rounds:",
+               items:["5 / leg Single-Leg Glute Bridge","5 / leg Split Squat","6 Incline T Push-Ups"] },
+      blocks:[
+        { id:"A", name:"Dumbbell Walking Lunge", video:"I34ysEkPK7w", rx:"12 steps @ RPE 6–7\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"B", name:"45° Back Extension", video:"cFNs7A3_oeI", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
+          note:"Hold a weight at your chest if you need more intensity.",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"C", name:"Back-Supported DB Shoulder Press", video:"fuQpuu--bMI", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"D", name:"Seated Cable Row", video:"oFtfkSElE0s", rx:"8 reps @ RPE 6–7\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"E", name:"Sustain LIC", rx:"Spin Bike / Rower\n20 min steady",
+          effort:{heart:"💚", label:"Sustained effort"},
+          log:{cols:["Dist / Cal","Avg HR","Max HR","RPE"], rows:1}, timer:{type:"count", sec:1200} },
+      ],
+      cooldown:["Foam Roll Shins 2–3 min","Standing Calf Stretch 3 × 30 sec / side","Tibialis Raise 3 × 5–10 reps"] },
+
+    { day:"Sunday", date:"January 26", type:"rest", title:"Rest Day",
+      note:"Full rest — or an easy walk if you feel like moving." },
+  ]
+},
+{
+  week:3, meta:"Progression",
+  days:[
+    { day:"Monday", date:"January 27", type:"run", title:"W3 · Run 1",
+      warmup:["5 min brisk walk"],
+      run:{ label:"1 min jog · 1 min walk × 8 (16 min)",
+            timer:{type:"interval", sets:8, phases:[
+              {name:"Jog", sec:60, tone:"hot"}, {name:"Walk", sec:60, tone:"easy"}]}},
+      cooldown:["5 min brisk walk"] },
+
+    { day:"Tuesday", date:"January 28", type:"strength", title:"W3 · Strength 1",
+      warmup:{ pre:"3–5 min cardio of choice, then 3 rounds:",
+               items:["5 / leg Single-Leg Deadlift","5 / leg Curtsy Lunge","3 / side Bird Dog"] },
+      blocks:[
+        { id:"A", name:"Goblet Squat", video:"MeIiIdhvXT4", rx:"12 reps @ RPE 6–7\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"B", name:"Dumbbell Romanian Deadlift", video:"aa57T45iFSE", rx:"12 reps @ RPE 6–7\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"C", name:"Dumbbell Bench Press", video:"epUEDuFBmvk", rx:"12 reps @ RPE 6–7\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"D", name:"Lat Pull Down", video:"CAwf7n6Luuc", rx:"12 reps @ RPE 6–7\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"E", name:"Interval LIC", rx:"Assault Bike / Rower / Ski Erg\n30 sec high effort · 45 sec rest × 8 (10 min)",
+          effort:{heart:"🧡", label:"High sustained effort"},
+          log:{cols:["Dist / Cal","RPE"], rows:8}, timer:{type:"interval", sets:8, phases:[
+            {name:"Work", sec:30, tone:"hot"}, {name:"Rest", sec:45, tone:"rest"}]} },
+      ],
+      cooldown:["Foam Roll Calves 2–3 min","Thinking Pose 3 × 30 sec / side","Heel Sit 60–90 sec"] },
+
+    { day:"Wednesday", date:"January 29", type:"run", title:"W3 · Run 2",
+      warmup:["5 min brisk walk"],
+      run:{ label:"1 min jog · 1 min walk × 10 (20 min)",
+            timer:{type:"interval", sets:10, phases:[
+              {name:"Jog", sec:60, tone:"hot"}, {name:"Walk", sec:60, tone:"easy"}]}},
+      cooldown:["5 min brisk walk"] },
+
+    { day:"Thursday", date:"January 30", type:"rest", title:"Rest Day",
+      note:"Walk 30–60 min total for the day. All in one go, or broken into shorter walks." },
+
+    { day:"Friday", date:"January 31", type:"run", title:"W3 · Run 3",
+      warmup:["5 min brisk walk"],
+      run:{ label:"1 min jog · 1 min walk × 12 (24 min)",
+            timer:{type:"interval", sets:12, phases:[
+              {name:"Jog", sec:60, tone:"hot"}, {name:"Walk", sec:60, tone:"easy"}]}},
+      cooldown:["5 min brisk walk"] },
+
+    { day:"Saturday", date:"February 1", type:"strength", title:"W3 · Strength 2",
+      warmup:{ pre:"3–5 min cardio of choice, then 3 rounds:",
+               items:["5 / leg Single-Leg Glute Bridge","5 / leg Split Squat","6 Incline T Push-Ups"] },
+      blocks:[
+        { id:"A", name:"Dumbbell Walking Lunge", video:"I34ysEkPK7w", rx:"20 steps @ RPE 6–7\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"B", name:"45° Back Extension", video:"cFNs7A3_oeI", rx:"12 reps @ RPE 6–7\n90 sec rest × 3 sets",
+          note:"Hold a weight at your chest if you need more intensity.",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"C", name:"Back-Supported DB Shoulder Press", video:"fuQpuu--bMI", rx:"12 reps @ RPE 6–7\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"D", name:"Seated Cable Row", video:"oFtfkSElE0s", rx:"12 reps @ RPE 6–7\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"E", name:"Sustain LIC", rx:"Spin Bike / Rower\n30 min steady",
+          effort:{heart:"💚", label:"Sustained effort"},
+          log:{cols:["Dist / Cal","Avg HR","Max HR","RPE"], rows:1}, timer:{type:"count", sec:1800} },
+      ],
+      cooldown:["Foam Roll Shins 2–3 min","Standing Calf Stretch 3 × 30 sec / side","Tibialis Raise 3 × 5–10 reps"] },
+
+    { day:"Sunday", date:"February 2", type:"rest", title:"Rest Day",
+      note:"Full rest — or an easy walk if you feel like moving." },
+  ]
+},
+{
+  week:4, meta:"Intensity",
+  days:[
+    { day:"Monday", date:"February 3", type:"run", title:"W4 · Run 1",
+      warmup:["5 min brisk walk"],
+      run:{ label:"2 min jog · 1 min walk × 6 (18 min)",
+            timer:{type:"interval", sets:6, phases:[
+              {name:"Jog", sec:120, tone:"hot"}, {name:"Walk", sec:60, tone:"easy"}]}},
+      cooldown:["5 min brisk walk"] },
+
+    { day:"Tuesday", date:"February 4", type:"strength", title:"W4 · Strength 1",
+      warmup:{ pre:"3–5 min cardio of choice, then 3 rounds:",
+               items:["6 Step Up","6 Archer Squat","6 Plank Shoulder Tap"] },
+      blocks:[
+        { id:"A", name:"Goblet Squat", video:"MeIiIdhvXT4", rx:"8 reps @ RPE 8–9  (heavier than Wk 1)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"B", name:"Dumbbell Romanian Deadlift", video:"aa57T45iFSE", rx:"8 reps @ RPE 8–9  (heavier than Wk 1)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"C", name:"Dumbbell Bench Press", video:"epUEDuFBmvk", rx:"8 reps @ RPE 8–9  (heavier than Wk 1)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"D", name:"Lat Pull Down", video:"CAwf7n6Luuc", rx:"8 reps @ RPE 8–9  (heavier than Wk 1)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"E", name:"Interval LIC", rx:"Assault Bike / Rower / Ski Erg\n90 sec high effort · 3 min rest × 3 (13.5 min)",
+          effort:{heart:"🧡", label:"High sustained effort"},
+          log:{cols:["Dist / Cal","RPE"], rows:3}, timer:{type:"interval", sets:3, phases:[
+            {name:"Work", sec:90, tone:"hot"}, {name:"Rest", sec:180, tone:"rest"}]} },
+      ],
+      cooldown:["Foam Roll Calves 2–3 min","Thinking Pose 3 × 30 sec / side","Heel Sit 60–90 sec"] },
+
+    { day:"Wednesday", date:"February 5", type:"run", title:"W4 · Run 2",
+      warmup:["5 min brisk walk"],
+      run:{ label:"2 min 30 sec jog · 1 min walk × 6 (21 min)",
+            timer:{type:"interval", sets:6, phases:[
+              {name:"Jog", sec:150, tone:"hot"}, {name:"Walk", sec:60, tone:"easy"}]}},
+      cooldown:["5 min brisk walk"] },
+
+    { day:"Thursday", date:"February 6", type:"rest", title:"Rest Day",
+      note:"Walk 30–60 min total for the day. All in one go, or broken into shorter walks." },
+
+    { day:"Friday", date:"February 7", type:"run", title:"W4 · Run 3",
+      warmup:["5 min brisk walk"],
+      run:{ label:"3 min jog · 1 min walk × 6 (24 min)",
+            timer:{type:"interval", sets:6, phases:[
+              {name:"Jog", sec:180, tone:"hot"}, {name:"Walk", sec:60, tone:"easy"}]}},
+      cooldown:["5 min brisk walk"] },
+
+    { day:"Saturday", date:"February 8", type:"strength", title:"W4 · Strength 2",
+      warmup:{ pre:"3–5 min cardio of choice, then 3 rounds:",
+               items:["10 Glute Bridge (feet on bench)","5 / leg Bulgarian Split Squat","6 Bear Crunch"] },
+      blocks:[
+        { id:"A", name:"Dumbbell Walking Lunge", video:"I34ysEkPK7w", rx:"12 steps @ RPE 8–9  (heavier than Wk 1)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"B", name:"45° Back Extension", video:"cFNs7A3_oeI", rx:"8 reps @ RPE 8–9  (heavier than Wk 1)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"C", name:"Back-Supported DB Shoulder Press", video:"fuQpuu--bMI", rx:"8 reps @ RPE 8–9  (heavier than Wk 1)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"D", name:"Seated Cable Row", video:"oFtfkSElE0s", rx:"8 reps @ RPE 8–9  (heavier than Wk 1)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"E", name:"Sustain LIC", rx:"Spin Bike / Rower\n12 min sustained · 2 min rest × 2 (28 min)",
+          effort:{heart:"💚", label:"Sustained effort"},
+          log:{cols:["Dist / Cal","Avg HR","Max HR","RPE"], rows:2}, timer:{type:"interval", sets:2, phases:[
+            {name:"Sustain", sec:720, tone:"easy"}, {name:"Rest", sec:120, tone:"rest"}]} },
+      ],
+      cooldown:["Foam Roll Shins 2–3 min","Standing Calf Stretch 3 × 30 sec / side","Tibialis Raise 3 × 5–10 reps"] },
+
+    { day:"Sunday", date:"February 9", type:"rest", title:"Rest Day",
+      note:"Full rest — or an easy walk if you feel like moving." },
+  ]
+},
+{
+  week:5, meta:"Intensity",
+  days:[
+    { day:"Monday", date:"February 10", type:"run", title:"W5 · Run 1",
+      warmup:["5 min brisk walk"],
+      run:{ label:"2 min jog · 1 min walk × 6 (18 min)",
+            timer:{type:"interval", sets:6, phases:[
+              {name:"Jog", sec:120, tone:"hot"}, {name:"Walk", sec:60, tone:"easy"}]}},
+      cooldown:["5 min brisk walk"] },
+
+    { day:"Tuesday", date:"February 11", type:"strength", title:"W5 · Strength 1",
+      warmup:{ pre:"3–5 min cardio of choice, then 3 rounds:",
+               items:["6 Step Up","6 Archer Squat","6 Plank Shoulder Tap"] },
+      blocks:[
+        { id:"A", name:"Goblet Squat", video:"MeIiIdhvXT4", rx:"8 reps @ RPE 8–9  (heavier than Wk 1)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"B", name:"Dumbbell Romanian Deadlift", video:"aa57T45iFSE", rx:"8 reps @ RPE 8–9  (heavier than Wk 1)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"C", name:"Dumbbell Bench Press", video:"epUEDuFBmvk", rx:"8 reps @ RPE 8–9  (heavier than Wk 1)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"D", name:"Lat Pull Down", video:"CAwf7n6Luuc", rx:"8 reps @ RPE 8–9  (heavier than Wk 1)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"E", name:"Interval LIC", rx:"Assault Bike / Rower / Ski Erg\n90 sec high effort · 3 min rest × 3 (13.5 min)",
+          effort:{heart:"🧡", label:"High sustained effort"},
+          log:{cols:["Dist / Cal","RPE"], rows:3}, timer:{type:"interval", sets:3, phases:[
+            {name:"Work", sec:90, tone:"hot"}, {name:"Rest", sec:180, tone:"rest"}]} },
+      ],
+      cooldown:["Foam Roll Calves 2–3 min","Thinking Pose 3 × 30 sec / side","Heel Sit 60–90 sec"] },
+
+    { day:"Wednesday", date:"February 12", type:"run", title:"W5 · Run 2",
+      warmup:["5 min brisk walk"],
+      run:{ label:"2 min 30 sec jog · 1 min walk × 6 (21 min)",
+            timer:{type:"interval", sets:6, phases:[
+              {name:"Jog", sec:150, tone:"hot"}, {name:"Walk", sec:60, tone:"easy"}]}},
+      cooldown:["5 min brisk walk"] },
+
+    { day:"Thursday", date:"February 13", type:"rest", title:"Rest Day",
+      note:"Walk 30–60 min total for the day. All in one go, or broken into shorter walks." },
+
+    { day:"Friday", date:"February 14", type:"run", title:"W5 · Run 3",
+      warmup:["5 min brisk walk"],
+      run:{ label:"3 min jog · 1 min walk × 6 (24 min)",
+            timer:{type:"interval", sets:6, phases:[
+              {name:"Jog", sec:180, tone:"hot"}, {name:"Walk", sec:60, tone:"easy"}]}},
+      cooldown:["5 min brisk walk"] },
+
+    { day:"Saturday", date:"February 15", type:"strength", title:"W5 · Strength 2",
+      warmup:{ pre:"3–5 min cardio of choice, then 3 rounds:",
+               items:["10 Glute Bridge (feet on bench)","5 / leg Bulgarian Split Squat","6 Bear Crunch"] },
+      blocks:[
+        { id:"A", name:"Dumbbell Walking Lunge", video:"I34ysEkPK7w", rx:"12 steps @ RPE 8–9  (heavier than Wk 1)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"B", name:"45° Back Extension", video:"cFNs7A3_oeI", rx:"8 reps @ RPE 8–9  (heavier than Wk 1)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"C", name:"Back-Supported DB Shoulder Press", video:"fuQpuu--bMI", rx:"8 reps @ RPE 8–9  (heavier than Wk 1)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"D", name:"Seated Cable Row", video:"oFtfkSElE0s", rx:"8 reps @ RPE 8–9  (heavier than Wk 1)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"E", name:"Sustain LIC", rx:"Spin Bike / Rower\n12 min sustained · 2 min rest × 2 (28 min)",
+          effort:{heart:"💚", label:"Sustained effort"},
+          log:{cols:["Dist / Cal","Avg HR","Max HR","RPE"], rows:2}, timer:{type:"interval", sets:2, phases:[
+            {name:"Sustain", sec:720, tone:"easy"}, {name:"Rest", sec:120, tone:"rest"}]} },
+      ],
+      cooldown:["Foam Roll Shins 2–3 min","Standing Calf Stretch 3 × 30 sec / side","Tibialis Raise 3 × 5–10 reps"] },
+
+    { day:"Sunday", date:"February 16", type:"rest", title:"Rest Day",
+      note:"Full rest — or an easy walk if you feel like moving." },
+  ]
+},
+{
+  week:6, meta:"Endurance",
+  days:[
+    { day:"Monday", date:"February 17", type:"run", title:"W6 · Run 1",
+      warmup:["5 min brisk walk"],
+      run:{ label:"3 min jog · 1 min walk × 8 (32 min)",
+            timer:{type:"interval", sets:8, phases:[
+              {name:"Jog", sec:180, tone:"hot"}, {name:"Walk", sec:60, tone:"easy"}]}},
+      cooldown:["5 min brisk walk"] },
+
+    { day:"Tuesday", date:"February 18", type:"strength", title:"W6 · Strength 1",
+      warmup:{ pre:"3–5 min cardio of choice, then 3 rounds:",
+               items:["6 Step Up","6 Archer Squat","6 Plank Shoulder Tap"] },
+      blocks:[
+        { id:"A", name:"Goblet Squat", video:"MeIiIdhvXT4", rx:"12 reps @ RPE 8–9  (heavier than Wk 3)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"B", name:"Dumbbell Romanian Deadlift", video:"aa57T45iFSE", rx:"12 reps @ RPE 8–9  (heavier than Wk 3)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"C", name:"Dumbbell Bench Press", video:"epUEDuFBmvk", rx:"12 reps @ RPE 8–9  (heavier than Wk 3)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"D", name:"Lat Pull Down", video:"CAwf7n6Luuc", rx:"12 reps @ RPE 8–9  (heavier than Wk 3)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"E", name:"Interval LIC", rx:"Assault Bike / Rower / Ski Erg\n30 sec high effort · 60 sec rest × 8 (12 min)",
+          effort:{heart:"🧡", label:"High sustained effort"},
+          log:{cols:["Dist / Cal","RPE"], rows:8}, timer:{type:"interval", sets:8, phases:[
+            {name:"Work", sec:30, tone:"hot"}, {name:"Rest", sec:60, tone:"rest"}]} },
+      ],
+      cooldown:["Foam Roll Calves 2–3 min","Thinking Pose 3 × 30 sec / side","Heel Sit 60–90 sec"] },
+
+    { day:"Wednesday", date:"February 19", type:"run", title:"W6 · Run 2",
+      warmup:["5 min brisk walk"],
+      run:{ label:"4 min jog · 1 min walk × 6 (30 min)",
+            timer:{type:"interval", sets:6, phases:[
+              {name:"Jog", sec:240, tone:"hot"}, {name:"Walk", sec:60, tone:"easy"}]}},
+      cooldown:["5 min brisk walk"] },
+
+    { day:"Thursday", date:"February 20", type:"rest", title:"Rest Day",
+      note:"Walk 30–60 min total for the day. All in one go, or broken into shorter walks." },
+
+    { day:"Friday", date:"February 21", type:"run", title:"W6 · Run 3",
+      warmup:["5 min brisk walk"],
+      run:{ label:"5 min jog · 1 min walk × 5 (30 min)",
+            timer:{type:"interval", sets:5, phases:[
+              {name:"Jog", sec:300, tone:"hot"}, {name:"Walk", sec:60, tone:"easy"}]}},
+      cooldown:["5 min brisk walk"] },
+
+    { day:"Saturday", date:"February 22", type:"strength", title:"W6 · Strength 2",
+      warmup:{ pre:"3–5 min cardio of choice, then 3 rounds:",
+               items:["10 Glute Bridge (feet on bench)","5 / leg Bulgarian Split Squat","6 Bear Crunch"] },
+      blocks:[
+        { id:"A", name:"Dumbbell Walking Lunge", video:"I34ysEkPK7w", rx:"20 steps @ RPE 8–9  (heavier than Wk 3)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"B", name:"45° Back Extension", video:"cFNs7A3_oeI", rx:"12 reps @ RPE 8–9  (heavier than Wk 3)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"C", name:"Back-Supported DB Shoulder Press", video:"fuQpuu--bMI", rx:"12 reps @ RPE 8–9  (heavier than Wk 3)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"D", name:"Seated Cable Row", video:"oFtfkSElE0s", rx:"12 reps @ RPE 8–9  (heavier than Wk 3)\n90 sec rest × 3 sets",
+          log:{cols:["Weight","Reps","RPE"], rows:3}, timer:{type:"rest", sec:90} },
+        { id:"E", name:"Sustain LIC", rx:"Spin Bike / Rower\n8 min sustained · 2 min rest × 3 (30 min)",
+          effort:{heart:"💚", label:"Sustained effort"},
+          log:{cols:["Dist / Cal","Avg HR","Max HR","RPE"], rows:3}, timer:{type:"interval", sets:3, phases:[
+            {name:"Sustain", sec:480, tone:"easy"}, {name:"Rest", sec:120, tone:"rest"}]} },
+      ],
+      cooldown:["Foam Roll Shins 2–3 min","Standing Calf Stretch 3 × 30 sec / side","Tibialis Raise 3 × 5–10 reps"] },
+
+    { day:"Sunday", date:"February 23", type:"rest", title:"Rest Day",
+      note:"Full rest — or an easy walk if you feel like moving." },
+  ]
+},
+/* ---- Paste Week 7 here, same shape:  { week:7, meta:"…", days:[ … ] },  ---- */
 ];
 
 /* ===================== STATE ===================== */
@@ -444,19 +809,6 @@ function runCard(day){
 
 function exBlock(day, b){
   const wk=WEEKS[wIdx], key=blockKey(wk.week,day.day,b.id), r=rec(key);
-  const cols=b.log.cols, rows=b.log.rows;
-  const saved=r.sets||[];
-  let table=`<table class="log"><thead><tr><th class="set">Set</th>${cols.map(c=>`<th>${esc(c)}</th>`).join("")}</tr></thead><tbody>`;
-  for(let i=0;i<rows;i++){
-    table+=`<tr><td class="set">${i+1}</td>${cols.map((c,ci)=>{
-      const v = saved[i] && saved[i][ci]!=null ? esc(saved[i][ci]) : "";
-      return `<td><input inputmode="decimal" data-log="${key}" data-r="${i}" data-c="${ci}" value="${v}"></td>`;
-    }).join("")}</tr>`;
-  }
-  table+=`</tbody></table>`;
-
-  const exField = b.exercise
-    ? `<div class="exline"><label>Machine</label><input data-ex="${key}" placeholder="e.g. Rower" value="${r.exercise?esc(r.exercise):""}"></div>` : "";
 
   const effort = b.effort
     ? `<div class="effort" style="color:${b.effort.heart==='🧡'?'var(--hot-ink)':'var(--easy-ink)'}">
@@ -479,8 +831,13 @@ function exBlock(day, b){
     </div>
     ${b.note?`<div class="ex__note">${esc(b.note)}</div>`:""}
     <div class="ex__body">
-      ${exField}
-      ${table}
+      ${b.video?`
+      <button class="demo__toggle" data-demo="${esc(key)}" data-vid="${esc(b.video)}" aria-expanded="false">
+        <span>▶ Watch demo</span><span class="chev">▼</span>
+      </button>
+      <div class="demo" id="demo-${esc(key)}">
+        <a class="demo__yt" href="https://www.youtube.com/watch?v=${esc(b.video)}" target="_blank" rel="noopener">Open in YouTube ↗</a>
+      </div>`:""}
       <div class="ex__actions">
         <button class="btn btn--timer ${toneCls}" data-timer="${esc(b.id)}"><span class="btn__ic">${t.type==='rest'?'⏱':'▶'}</span>${esc(tLabel)}</button>
         <button class="btn btn--done" data-done="${esc(b.id)}">${r.done?'✓ Done':'Mark done'}</button>
@@ -523,18 +880,24 @@ function renderTrain(){
 
   const v=$("#trainView"); v.innerHTML=html;
 
-  /* wire logging */
-  v.querySelectorAll("input[data-log]").forEach(inp=>{
-    inp.addEventListener("input",()=>{
-      const r=rec(inp.dataset.log); if(!r.sets) r.sets=[];
-      const ri=+inp.dataset.r, ci=+inp.dataset.c;
-      if(!r.sets[ri]) r.sets[ri]=[];
-      r.sets[ri][ci]=inp.value; persist();
-    });
+  /* wire video demos (lazy-load iframe) */
+  v.querySelectorAll("[data-demo]").forEach(btn=>{
+    btn.onclick=()=>{
+      const box=document.getElementById("demo-"+btn.dataset.demo);
+      const open=box.classList.toggle("is-open");
+      btn.setAttribute("aria-expanded", open?"true":"false");
+      let frame=box.querySelector(".demo__frame");
+      if(open && !frame){
+        frame=document.createElement("div");
+        frame.className="demo__frame";
+        frame.innerHTML='<iframe src="https://www.youtube-nocookie.com/embed/'+btn.dataset.vid+'?rel=0" title="Exercise demo" loading="lazy" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>';
+        box.insertBefore(frame, box.firstChild);
+      } else if(!open && frame){
+        frame.remove();
+      }
+    };
   });
-  v.querySelectorAll("input[data-ex]").forEach(inp=>{
-    inp.addEventListener("input",()=>{ rec(inp.dataset.ex).exercise=inp.value; persist(); });
-  });
+
   /* wire done */
   v.querySelectorAll("[data-done]").forEach(btn=>{
     btn.onclick=()=>{
@@ -583,13 +946,13 @@ function renderProgress(){
   });
 
   html+=`<details class="help">
-    <summary>How to add Week 2, 3, 4…</summary>
+    <summary>How to add Week 4, 5, 6…</summary>
     <div class="help__body">
       This app is one file. Open it in a text editor, find the line
-      <code>Paste Week 2 here</code> near the top of the script, and add a new
-      week block using the same shape as Week 1 — set <code>week:2</code>, give it a
+      <code>Paste Week 4 here</code> near the top of the script, and add a new
+      week block using the same shape as the others — set <code>week:4</code>, give it a
       <code>meta</code> label, and fill in <code>days</code>. Save the file, reopen it on
-      your phone, and the <b>‹ ›</b> arrows will switch between weeks. All your logs and
+      your phone, and the <b>‹ ›</b> arrows will switch between weeks. Your completed
       ticks are saved on this device automatically.
     </div>
   </details>`;
