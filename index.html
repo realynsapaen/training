@@ -1015,7 +1015,11 @@ function runTick(){
     if(T.remain<=0){
       nextStep();
     } else {
-      if(T.remain<=3.02 && Math.ceil(T.remain)!==Math.ceil(T.remain+dt)) beep(660,0.07);
+      if(T.remain<=10.02 && Math.ceil(T.remain)!==Math.ceil(T.remain+dt)){
+        const s=Math.ceil(T.remain);
+        if(!say(s)) beep(s<=3?1046:700, 0.13, s<=3?0.8:0.5);
+        if(s<=3) vibrate([70]);
+      }
       paint();
     }
   },100);
@@ -1023,12 +1027,13 @@ function runTick(){
 function nextStep(){
   if(T.i>=T.steps.length-1){ finishTimer(); return; }
   T.i++;
-  beep(880,0.12); vibrate([90]);
+  if(!say(T.steps[T.i].name)) beep(880,0.2,0.85);
+  vibrate([120,60,120]);
   startStep();
 }
 function finishTimer(){
-  beep(660,0.12); setTimeout(()=>beep(880,0.12),140); setTimeout(()=>beep(1180,0.2),300);
-  vibrate([120,80,120]);
+  if(!say("Done")){ beep(660,0.18,0.85); setTimeout(()=>beep(880,0.18,0.85),140); setTimeout(()=>beep(1180,0.28,0.9),300); }
+  vibrate([200,80,200]);
   $("#tPhase").textContent="Done";
   $("#tNum").textContent="0:00";
   $("#tRing").style.strokeDashoffset=0;
@@ -1038,6 +1043,7 @@ function finishTimer(){
 }
 function closeTimer(){
   clearInterval(T.tick);
+  try{ speechSynthesis.cancel(); }catch(e){}
   $("#timer").classList.remove("is-on");
   releaseWake();
 }
@@ -1045,6 +1051,7 @@ $("#tClose").onclick=closeTimer;
 $("#tSkip").onclick=()=>{ beep(500,0.05); nextStep(); };
 $("#tToggle").onclick=()=>{
   T.paused=!T.paused;
+  if(T.paused){ try{ speechSynthesis.cancel(); }catch(e){} }
   $("#tToggle").textContent=T.paused?"Resume":"Pause";
 };
 
@@ -1052,8 +1059,22 @@ $("#tToggle").onclick=()=>{
 function ensureAudio(){
   try{ if(!T.audio) T.audio=new (window.AudioContext||window.webkitAudioContext)();
        if(T.audio.state==="suspended") T.audio.resume(); }catch(e){}
+  try{ if('speechSynthesis' in window){ speechSynthesis.resume(); if(!VOICE) pickVoice(); } }catch(e){}
 }
-function beep(freq,dur){
+let VOICE=null;
+function pickVoice(){ try{ const vs=speechSynthesis.getVoices(); if(!vs||!vs.length) return;
+  VOICE = vs.find(v=>/female/i.test(v.name))
+    || vs.find(v=>/(Samantha|Karen|Moira|Tessa|Victoria|Fiona|Serena|Zira|Google UK English Female)/i.test(v.name))
+    || vs.find(v=>/^Google US English$/i.test(v.name))
+    || vs.find(v=>/^en(-|_)(US|GB|AU)/i.test(v.lang))
+    || vs[0];
+}catch(e){} }
+try{ if('speechSynthesis' in window){ pickVoice(); speechSynthesis.onvoiceschanged=pickVoice; } }catch(e){}
+function say(text){ try{ if(!('speechSynthesis' in window)) return false;
+  const u=new SpeechSynthesisUtterance(String(text));
+  if(VOICE) u.voice=VOICE; u.rate=1; u.pitch=1.1; u.volume=1;
+  speechSynthesis.speak(u); return true; }catch(e){ return false; } }
+function beep(freq,dur,vol){
   try{
     if(!T.audio) return;
     const o=T.audio.createOscillator(), g=T.audio.createGain();
@@ -1061,7 +1082,7 @@ function beep(freq,dur){
     o.connect(g); g.connect(T.audio.destination);
     const now=T.audio.currentTime;
     g.gain.setValueAtTime(0.001,now);
-    g.gain.exponentialRampToValueAtTime(0.35,now+0.01);
+    g.gain.exponentialRampToValueAtTime(vol||0.35,now+0.01);
     g.gain.exponentialRampToValueAtTime(0.001,now+dur);
     o.start(now); o.stop(now+dur+0.02);
   }catch(e){}
