@@ -961,7 +961,8 @@ function renderProgress(){
 }
 
 /* ===================== TIMER ENGINE ===================== */
-let T = { steps:[], i:0, remain:0, tick:null, paused:false, wake:null, audio:null };
+let T = { steps:[], i:0, remain:0, tick:null, paused:false, wake:null, audio:null,
+          endAt:0, spoken:null, pauseLeft:0, silent:null, hum:null };
 const RING_LEN = 2*Math.PI*54;
 $("#tRing").style.strokeDasharray = RING_LEN;
 
@@ -979,70 +980,91 @@ function buildSteps(t){
 
 function openTimer(t){
   T.steps=buildSteps(t); T.i=0; T.paused=false;
-  ensureAudio();
-  requestWake();
+  ensureAudio(); startKeepAlive(); requestWake();
+  T.endAt = Date.now() + T.steps[0].sec*1000;
+  T.spoken = null;
   $("#timer").classList.add("is-on");
   $("#tToggle").textContent="Pause";
-  startStep();
-  runTick();
+  renderStep(); runTick();
+  if(document.visibilityState!=="visible") scheduleAllCues();
 }
-function startStep(){
+function renderStep(){
   const s=T.steps[T.i];
-  T.remain=s.sec;
   const el=$("#timer");
   el.classList.remove("phase-hot","phase-easy","phase-rest");
   el.classList.add(s.tone==="hot"?"phase-hot":s.tone==="easy"?"phase-easy":"phase-rest");
   $("#tPhase").textContent=s.name;
   $("#tSet").textContent = s.set? `Set ${s.set} / ${s.sets}` : (T.steps.length>1?`Step ${T.i+1} / ${T.steps.length}`:"");
   const next=T.steps[T.i+1];
-  $("#tNext").textContent = next ? `Next · ${next.name} ${fmt(next.sec)}` : "Last one — finish strong";
+  $("#tNext").textContent = next ? `Next \u00b7 ${next.name} ${fmt(next.sec)}` : "Last one \u2014 finish strong";
+  T.spoken=null;
   paint();
 }
-function fmt(s){ const m=Math.floor(s/60); const ss=s%60; return m+":"+String(ss).padStart(2,"0"); }
+function fmt(s){ const m=Math.floor(s/60); const ss=Math.round(s%60); return m+":"+String(ss).padStart(2,"0"); }
 function paint(){
   const s=T.steps[T.i];
-  $("#tNum").textContent=fmt(Math.ceil(T.remain));
-  const frac = s.sec? (T.remain/s.sec) : 0;
+  const r=Math.max(0,T.remain);
+  $("#tNum").textContent=fmt(Math.ceil(r));
+  const frac = s.sec? (r/s.sec) : 0;
   $("#tRing").style.strokeDashoffset = RING_LEN*(1-frac);
 }
+
+/* ---- wall-clock driven loop: stays correct through screen lock ---- */
 function runTick(){
   clearInterval(T.tick);
-  let last=performance.now();
-  T.tick=setInterval(()=>{
-    if(T.paused){ last=performance.now(); return; }
-    const now=performance.now(); const dt=(now-last)/1000; last=now;
-    T.remain-=dt;
-    if(T.remain<=0){
-      nextStep();
-    } else {
-      if(T.remain<=10.02 && Math.ceil(T.remain)!==Math.ceil(T.remain+dt)){
-        const s=Math.ceil(T.remain);
-        if(!say(s)) beep(s<=3?1046:700, 0.13, s<=3?0.8:0.5);
-        if(s<=3) vibrate([70]);
-      }
-      paint();
+  T.tick=setInterval(syncFromClock, 200);
+  syncFromClock();
+}
+function syncFromClock(){
+  if(T.paused) return;
+  let remain=(T.endAt-Date.now())/1000;
+  // catch up through any steps that elapsed while the screen was off
+  while(remain<=0 && T.i < T.steps.length-1){
+    T.i++;
+    T.endAt += T.steps[T.i].sec*1000;
+    remain=(T.endAt-Date.now())/1000;
+    renderStep();
+    if(document.visibilityState==="visible"){
+      if(!say(T.steps[T.i].name)) beep(880,0.2,0.85);
+      vibrate([120,60,120]);
     }
-  },100);
+  }
+  if(remain<=0){ finishTimer(); return; }
+  T.remain=remain;
+  // live voice countdown only while the screen is on (scheduled beeps cover lock)
+  if(document.visibilityState==="visible"){
+    const sLeft=Math.ceil(remain);
+    if(sLeft<=10 && sLeft>=1 && T.spoken!==sLeft){
+      T.spoken=sLeft;
+      if(!say(sLeft)) beep(sLeft<=3?1046:700, 0.13, sLeft<=3?0.8:0.5);
+      if(sLeft<=3) vibrate([70]);
+    }
+  }
+  paint();
 }
 function nextStep(){
   if(T.i>=T.steps.length-1){ finishTimer(); return; }
   T.i++;
+  T.endAt = Date.now() + T.steps[T.i].sec*1000;
   if(!say(T.steps[T.i].name)) beep(880,0.2,0.85);
   vibrate([120,60,120]);
-  startStep();
+  renderStep();
+  if(document.visibilityState!=="visible") scheduleAllCues();
 }
 function finishTimer(){
-  if(!say("Done")){ beep(660,0.18,0.85); setTimeout(()=>beep(880,0.18,0.85),140); setTimeout(()=>beep(1180,0.28,0.9),300); }
+  clearInterval(T.tick); clearCues();
+  if(document.visibilityState==="visible"){
+    if(!say("Done")){ beep(660,0.18,0.85); setTimeout(()=>beep(880,0.18,0.85),140); setTimeout(()=>beep(1180,0.28,0.9),300); }
+  }
   vibrate([200,80,200]);
   $("#tPhase").textContent="Done";
   $("#tNum").textContent="0:00";
   $("#tRing").style.strokeDashoffset=0;
   $("#tNext").textContent="";
-  clearInterval(T.tick);
   setTimeout(closeTimer, 900);
 }
 function closeTimer(){
-  clearInterval(T.tick);
+  clearInterval(T.tick); clearCues(); stopKeepAlive();
   try{ speechSynthesis.cancel(); }catch(e){}
   $("#timer").classList.remove("is-on");
   releaseWake();
@@ -1050,10 +1072,78 @@ function closeTimer(){
 $("#tClose").onclick=closeTimer;
 $("#tSkip").onclick=()=>{ beep(500,0.05); nextStep(); };
 $("#tToggle").onclick=()=>{
-  T.paused=!T.paused;
-  if(T.paused){ try{ speechSynthesis.cancel(); }catch(e){} }
+  if(!T.paused){
+    T.paused=true; T.pauseLeft=(T.endAt-Date.now());
+    clearCues();
+    try{ speechSynthesis.cancel(); }catch(e){}
+  } else {
+    T.paused=false; T.endAt=Date.now()+(T.pauseLeft||0);
+    if(document.visibilityState!=="visible") scheduleAllCues();
+  }
   $("#tToggle").textContent=T.paused?"Resume":"Pause";
 };
+
+/* ---- pre-scheduled audio: fires even while the phone is locked ---- */
+let CUE=[];
+function clearCues(){ CUE.forEach(n=>{ try{ n.stop(); }catch(e){} }); CUE=[]; }
+function scheduleTone(at, freq, dur, vol){
+  if(!T.audio || at <= T.audio.currentTime+0.03) return;
+  try{
+    const o=T.audio.createOscillator(), g=T.audio.createGain();
+    o.frequency.value=freq; o.type="sine";
+    o.connect(g); g.connect(T.audio.destination);
+    g.gain.setValueAtTime(0.0001, at);
+    g.gain.exponentialRampToValueAtTime(vol, at+0.01);
+    g.gain.exponentialRampToValueAtTime(0.0001, at+dur);
+    o.start(at); o.stop(at+dur+0.03);
+    CUE.push(o);
+  }catch(e){}
+}
+function scheduleAllCues(){
+  clearCues();
+  if(!T.audio || T.paused) return;
+  const ctxNow=T.audio.currentTime, nowMs=Date.now();
+  const toCtx = ms => ctxNow + (ms-nowMs)/1000;
+  let endMs=T.endAt;
+  for(let idx=T.i; idx<T.steps.length; idx++){
+    if(idx>T.i) endMs += T.steps[idx].sec*1000;
+    // 10-second countdown into this step's end
+    for(let n=10;n>=1;n--){
+      const at=toCtx(endMs - n*1000);
+      if(n<=3) scheduleTone(at,1046,0.16,0.8); else scheduleTone(at,700,0.13,0.5);
+    }
+    // phase change / finish
+    if(idx < T.steps.length-1) scheduleTone(toCtx(endMs), 880, 0.22, 0.9);
+    else { scheduleTone(toCtx(endMs),660,0.2,0.9); scheduleTone(toCtx(endMs)+0.16,880,0.2,0.9); scheduleTone(toCtx(endMs)+0.34,1180,0.3,0.95); }
+  }
+}
+
+/* ---- keep the audio session alive so the browser doesn't suspend us ---- */
+const SILENT_WAV="data:audio/wav;base64,UklGRmQGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YUAGAACAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICA";
+function startKeepAlive(){
+  // silent looping element: holds audio focus while the screen is off
+  try{
+    if(!T.silent){
+      T.silent=new Audio(SILENT_WAV);
+      T.silent.loop=true; T.silent.volume=0.001; T.silent.setAttribute("playsinline","");
+    }
+    T.silent.play().catch(()=>{});
+  }catch(e){}
+  // silent web-audio loop: keeps the AudioContext running
+  try{
+    if(T.audio && !T.hum){
+      const buf=T.audio.createBuffer(1, T.audio.sampleRate, T.audio.sampleRate);
+      const src=T.audio.createBufferSource(); const g=T.audio.createGain();
+      g.gain.value=0.0001; src.buffer=buf; src.loop=true;
+      src.connect(g); g.connect(T.audio.destination); src.start();
+      T.hum=src;
+    }
+  }catch(e){}
+}
+function stopKeepAlive(){
+  try{ if(T.silent){ T.silent.pause(); T.silent.currentTime=0; } }catch(e){}
+  try{ if(T.hum){ T.hum.stop(); T.hum=null; } }catch(e){}
+}
 
 /* sound + haptics + wake lock (best-effort, all guarded) */
 function ensureAudio(){
@@ -1093,8 +1183,20 @@ async function requestWake(){
   try{ if("wakeLock" in navigator) T.wake=await navigator.wakeLock.request("screen"); }catch(e){}
 }
 function releaseWake(){ try{ if(T.wake){ T.wake.release(); T.wake=null; } }catch(e){} }
+
+/* screen off -> hand over to pre-scheduled beeps; screen on -> live voice again */
 document.addEventListener("visibilitychange",()=>{
-  if(document.visibilityState==="visible" && $("#timer").classList.contains("is-on")) requestWake();
+  const running=$("#timer").classList.contains("is-on");
+  if(!running) return;
+  if(document.visibilityState==="visible"){
+    clearCues();
+    requestWake();
+    try{ if(T.audio && T.audio.state==="suspended") T.audio.resume(); }catch(e){}
+    syncFromClock();
+  } else {
+    try{ speechSynthesis.cancel(); }catch(e){}
+    scheduleAllCues();
+  }
 });
 
 /* ===================== NAV WIRING ===================== */
